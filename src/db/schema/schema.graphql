@@ -1,0 +1,69 @@
+type Asset @table @sealed @export(name: "asset") {
+  symbol: String! @primaryKey
+  name: String!
+  symbolUrl: String!
+}
+
+type User @table @sealed @export(name: "user") {
+  id: ID! @primaryKey
+  name: String!
+}
+
+type WatchedAsset @table @sealed @export(name: "watched") {
+  id: String! @primaryKey
+  userId: ID
+  symbol: String!
+  asset: Asset @relationship(from: symbol)
+  price: AssetLivePriceData @relationship(from: symbol)
+}
+
+type AssetHistoricalPriceData @table @sealed @export(name: "price-historical") {
+  id: String! @primaryKey
+  symbol: String! @indexed
+  asset: Asset @relationship(from: symbol)
+  open: Float!
+  high: Float!
+  low: Float!
+  close: Float!
+  volume: Float!
+  timestamp: String!
+}
+
+type AssetLivePriceData @table @sealed @export(name: "price-live") {
+  symbol: String! @primaryKey
+  asset: Asset @relationship(from: symbol)
+  lastPrice: Float!
+  open: Float!
+  high: Float!
+  low: Float!
+  volume: Float!
+  change: Float!
+  percentChange: Float!
+  bidPrice: Float!
+  askPrice: Float!
+}
+
+type AssetNews @table @sealed @export(name: "news") {
+  id: ID! @primaryKey
+  symbol: String!
+  url: String!
+  preview: String!
+  image: String!
+  date: String!
+}
+
+type PriceAnalysis @table @sealed @export(name: "analysis") {
+  symbol: String! @primaryKey
+  rsi: Float!
+  ema12: Float!
+  upperBand: Float!
+  middleBand: Float!
+  lowerBand: Float!
+}
+
+type BiggestMovers @table @sealed @export(name: "movers") {
+  symbol: String! @primaryKey
+  lastPrice: Float!
+  change: Float!
+  percentChange: Float!
+}
