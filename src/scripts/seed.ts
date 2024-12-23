@@ -1,106 +1,107 @@
-import axios from "axios";
-import { BinanceBaseUrl, BinanceRoutes } from "../constants/index.js";
-import { COINS } from "./coins.js";
+import axios from 'axios';
+import { BinanceBaseUrl, BinanceRoutes } from '../constants/index.js';
+import { COINS } from './coins.js';
 
-const BASIC_AUTH = Buffer.from(`${process.env.HARPERDB_USERNAME}:${process.env.HARPERDB_PASSWORD}`)
-    .toString('base64');
+const BASIC_AUTH = Buffer.from(`${process.env.HARPERDB_USERNAME}:${process.env.HARPERDB_PASSWORD}`).toString('base64');
 
 const HEADERS = {
-    headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${BASIC_AUTH}`,
-    },
+	headers: {
+		'Content-Type': 'application/json',
+		'Authorization': `Basic ${BASIC_AUTH}`,
+	},
 };
 
 const run = async () => {
-    const userId = '123-xyz';
-    const userResp = await axios.post(
-        process.env.HARPERDB_OPERATIONS_HOST!,
-        {
-            operation: "upsert",
-            database: "data",
-            table: "User",
-            records: [{
-                id: userId,
-                name: 'John Doe',
-            }],
-        },
-        HEADERS,
-    );
+	const userId = '123-xyz';
+	const userResp = await axios.post(
+		process.env.HARPERDB_OPERATIONS_HOST!,
+		{
+			operation: 'upsert',
+			database: 'data',
+			table: 'User',
+			records: [
+				{
+					id: userId,
+					name: 'John Doe',
+				},
+			],
+		},
+		HEADERS
+	);
 
-    console.log('Seeded users', userResp.data);
+	console.log('Seeded users', userResp.data);
 
-    const assetResp = await axios.post(
-        process.env.HARPERDB_OPERATIONS_HOST!,
-        {
-            operation: "upsert",
-            database: process.env.HARPERDB_DATABASE,
-            table: "Asset",
-            records: COINS,
-        },
-        HEADERS,
-    );
+	const assetResp = await axios.post(
+		process.env.HARPERDB_OPERATIONS_HOST!,
+		{
+			operation: 'upsert',
+			database: process.env.HARPERDB_DATABASE,
+			table: 'Asset',
+			records: COINS,
+		},
+		HEADERS
+	);
 
-    console.log('Seeded assets', assetResp.data);
+	console.log('Seeded assets', assetResp.data);
 
-    const watchedResp = await axios.post(
-        process.env.HARPERDB_OPERATIONS_HOST!,
-        {
-            operation: "upsert",
-            database: process.env.HARPERDB_DATABASE,
-            table: "WatchedAsset",
-            records: [
-                {
-                    id: `${COINS[0].symbol}-${userId}`,
-                    userId: userId,
-                    symbol: COINS[0].symbol,
-                },
-                {
-                    id: `${COINS[1].symbol}-${userId}`,
-                    userId: userId,
-                    symbol: COINS[1].symbol,
-                },
-            ],
-        },
-        HEADERS,
-    );
+	const watchedResp = await axios.post(
+		process.env.HARPERDB_OPERATIONS_HOST!,
+		{
+			operation: 'upsert',
+			database: process.env.HARPERDB_DATABASE,
+			table: 'WatchedAsset',
+			records: [
+				{
+					id: `${COINS[0].symbol}-${userId}`,
+					userId: userId,
+					symbol: COINS[0].symbol,
+				},
+				{
+					id: `${COINS[1].symbol}-${userId}`,
+					userId: userId,
+					symbol: COINS[1].symbol,
+				},
+			],
+		},
+		HEADERS
+	);
 
-    console.log('Seeded watched assets', watchedResp.data);
+	console.log('Seeded watched assets', watchedResp.data);
 
-    await Promise.all(
-        COINS.map(async (coin) => {
-            console.log('Retrieving asset candles data: ', coin.symbol);
+	await Promise.all(
+		COINS.map(async (coin) => {
+			console.log('Retrieving asset candles data: ', coin.symbol);
 
-            const candlesResp = await axios.get(
-                `${BinanceBaseUrl}${BinanceRoutes.CANDLES}?symbol=${coin.symbol.toUpperCase()}&interval=1d&limit=365`
-            );
-            const historyData = candlesResp.data.map((candle: any, index: number) => ({
-                id: `${coin.symbol}-${index}`,
-                symbol: coin.symbol,
-                open: parseFloat(candle[1]),
-                high: parseFloat(candle[2]),
-                low: parseFloat(candle[3]),
-                close: parseFloat(candle[4]),
-                volume: parseFloat(candle[7]),
-                timestamp: candle[6].toString(),
-            }));
+			const candlesResp = await axios.get(
+				`${BinanceBaseUrl}${BinanceRoutes.CANDLES}?symbol=${coin.symbol.toUpperCase()}&interval=1d&limit=365`
+			);
+			const historyData = candlesResp.data.map((candle: any, index: number) => ({
+				id: `${coin.symbol}-${index}`,
+				symbol: coin.symbol,
+				open: parseFloat(candle[1]),
+				high: parseFloat(candle[2]),
+				low: parseFloat(candle[3]),
+				close: parseFloat(candle[4]),
+				volume: parseFloat(candle[7]),
+				timestamp: candle[6].toString(),
+			}));
 
-            await axios.post(
-                process.env.HARPERDB_OPERATIONS_HOST!,
-                {
-                    operation: "upsert",
-                    database: "data",
-                    table: "AssetHistoricalPriceData",
-                    records: historyData,
-                },
-                HEADERS,
-            );
+			await axios.post(
+				process.env.HARPERDB_OPERATIONS_HOST!,
+				{
+					operation: 'upsert',
+					database: 'data',
+					table: 'AssetHistoricalPriceData',
+					records: historyData,
+				},
+				HEADERS
+			);
 
-            console.log(`Seeded ${historyData.length} candles for ${coin.symbol}`);
-        }),
-    );
+			console.log(`Seeded ${historyData.length} candles for ${coin.symbol}`);
+		})
+	);
 
-    console.log('Done seeding candles data');
+	console.log('Done seeding candles data');
 };
 
 run();

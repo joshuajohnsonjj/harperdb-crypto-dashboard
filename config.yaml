@@ -2,6 +2,6 @@ rest: true
 graphqlSchema:
   files: src/schema/schema.graphql
 jsResource:
-  files: dist/resources/index.js
+  files: dist/db/resources/index.js
 static:
   files: webDist/client/index.html
