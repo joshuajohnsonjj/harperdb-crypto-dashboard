@@ -1,7 +1,10 @@
 import { Resource, tables } from 'harperdb';
 import { join } from 'path';
-import { Asset, WatchedAsset } from '../../types/graphql.js';
+import { Asset, BiggestMovers, WatchedAsset } from '../../types/graphql.js';
 import ejs from 'ejs';
+import axios from 'axios';
+import { BinanceBaseUrl, BinanceRoutes } from '../../constants/index.js';
+import { BinanceDailyTickerResponse } from '../../types/api.js';
 
 const { Asset: AssetTable, WatchedAsset: WatchedAssetTable } = tables;
 
@@ -61,14 +64,34 @@ const getWatchedAssets = async (userId: string): Promise<{ [symbol: string]: any
 	return results;
 };
 
+const getBiggestMovers = async (): Promise<any> => {
+	const tickerResponse = await axios.get(`${BinanceBaseUrl}${BinanceRoutes.DAY_TICKER}`);
+
+	if (tickerResponse.status !== 200) {
+		console.log(`Error getting tickers: ${tickerResponse.statusText}`);
+		return { biggestGainers: [], biggestLosers: [] };
+	}
+
+	const tickers = (tickerResponse.data as BinanceDailyTickerResponse[])
+		.sort((a, b) => parseFloat(a.priceChangePercent) - parseFloat(b.priceChangePercent))
+		.map((ticker) => ({
+			symbol: ticker.symbol,
+			change: parseFloat(ticker.priceChange).toFixed(2),
+			percentChange: parseFloat(ticker.priceChangePercent).toFixed(1),
+		}));
+
+	return { biggestLosers: tickers.slice(1, 4), biggestGainers: tickers.slice(tickers.length - 4, tickers.length - 1) };
+};
+
 export class Dashboard extends Resource {
 	// TODO: get user id from context
 	async get() {
-		const [assets, watched] = await Promise.all([getAssets(), getWatchedAssets('123-xyz')]);
+		const [assets, watched, movers] = await Promise.all([getAssets(), getWatchedAssets('123-xyz'), getBiggestMovers()]);
 
 		const html = await ejs.renderFile(join(import.meta.dirname, '../../../templates/dashboard.ejs'), {
 			availableAssets: assets.filter((asset) => !watched[asset.symbol]),
 			watchedAssets: Object.values(watched),
+			...movers,
 		});
 
 		return {

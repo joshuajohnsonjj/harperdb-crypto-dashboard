@@ -12,7 +12,7 @@ const getAssetName = async (symbol: string): Promise<string> => {
 };
 
 export class ExternalNewsAPI extends Resource {
-	async get(params: any): Promise<AssetNews[]> {
+	async get(params: any): Promise<any> {
 		try {
 			const symbol = params.url.replace('/', '');
 			const assetName = await getAssetName(symbol);
@@ -25,28 +25,31 @@ export class ExternalNewsAPI extends Resource {
 				language: 'en',
 				country: 'us',
 				image: '1',
+				removeduplicate: '1',
 			});
 
 			const tickerResponse = await axios.get(`${NewsDataBaseUrl}${NewsDataRoutes.LATEST}?${query}`);
 
 			if (tickerResponse.status !== 200) {
 				console.log(`Error getting news: ${tickerResponse.statusText}`);
-				return [];
+				return { content: '[]' };
 			}
 
-			return tickerResponse.data.results.map((item: NewsAPIResponse, ndx: number) => ({
-				id: `${symbol}-${ndx}`,
-				symbol,
-				url: item.link,
-				preview: item.title,
-				image: item.image_url,
-				date: item.pubDate,
-			}));
+			const stringifiedContent = JSON.stringify(
+				tickerResponse.data.results.map((item: NewsAPIResponse) => ({
+					url: item.link,
+					preview: item.title,
+					image: item.image_url,
+					date: item.pubDate,
+				}))
+			);
+
+			return { content: stringifiedContent };
 		} catch (error) {
 			console.log(`Error getting news: ${error}`);
-			return [];
+			return { content: '[]' };
 		}
 	}
 }
 
-AssetNewsTable.sourcedFrom(ExternalNewsAPI, { expiration: 86400 });
+AssetNewsTable.sourcedFrom(ExternalNewsAPI, { expiration: 3600 });

@@ -15,17 +15,8 @@ const getAssetDetails = async (symbol: string) => {
 	const [asset, price, analysis, news, priceHistoryIterator] = await Promise.all([
 		AssetTable.get({ id: symbol, select: ['name', 'symbolUrl'] }),
 		LivePriceTable.get({ id: symbol, select: ['lastPrice', 'change', 'percentChange'] }),
-		AnalysisTable.get({ id: symbol, select: ['ema12', 'upperBand', 'middleBand', 'lowerBand', 'rsi'] }),
-		NewsTable.get({
-			conditions: [
-				{
-					attribute: 'symbol',
-					comparator: 'equals',
-					value: symbol,
-				},
-			],
-			limit: 10,
-		}),
+		AnalysisTable.get({ id: symbol, select: ['ema12', 'upperBand', 'middleBand', 'lowerBand'] }),
+		NewsTable.get({ id: symbol, select: ['content'] }),
 		HistoricalPriceTable.get({
 			conditions: [
 				{
@@ -34,7 +25,8 @@ const getAssetDetails = async (symbol: string) => {
 					value: symbol,
 				},
 			],
-			limit: 14,
+			limit: 365,
+			select: ['close'],
 			sort: {
 				attribute: 'timestamp',
 				descending: true,
@@ -45,11 +37,6 @@ const getAssetDetails = async (symbol: string) => {
 	const historical: AssetHistoricalPriceData[] = [];
 	for await (const record of priceHistoryIterator) {
 		historical.push(record as AssetHistoricalPriceData);
-	}
-
-	// const newsList: any[] = [];
-	for await (const record of news) {
-		console.log(record);
 	}
 
 	const dollarFormater = new Intl.NumberFormat('en-US', {
@@ -70,9 +57,8 @@ const getAssetDetails = async (symbol: string) => {
 			upperBand: dollarFormater.format((analysis as any).upperBand),
 			middleBand: dollarFormater.format((analysis as any).middleBand),
 			lowerBand: dollarFormater.format((analysis as any).lowerBand),
-			rsi: dollarFormater.format((analysis as any)?.rsi ?? 0),
 		},
-		news: [], //news as unknown as AssetNews,
+		news: JSON.parse((news as any).content),
 		historical,
 	};
 };
@@ -88,16 +74,13 @@ export class AssetView extends Resource {
 			detail,
 		});
 
-		console.log({
-			title: `${detail.asset.name} Detail`,
-			symbol,
-			detail,
-		});
-
 		return {
 			status: 200,
 			headers: { 'Content-Type': 'text/html' },
-			body: html,
+			body: html.replace(
+				`<!--app-data-->`,
+				`<script>window.__HISTORICAL_DATA__ = ${JSON.stringify(detail.historical)};</script>`
+			),
 		};
 	}
 }

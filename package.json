@@ -13,7 +13,7 @@
 		"generate:types": "graphql-codegen --config codegen.ts",
 		"build": "tsc",
 		"run:seed": "node --env-file=.env dist/scripts/seed.js",
-		"run:live-ingest": "node --env-file=.env src/scripts/liveDatatIngest.ts",
+		"run:live-ingest": "node --env-file=.env dist/scripts/liveDataIngest.js",
 		"format": "prettier --write .",
 		"postinstall": "npm link harperdb",
 		"postuninstall": "npm unlink harperdb"
