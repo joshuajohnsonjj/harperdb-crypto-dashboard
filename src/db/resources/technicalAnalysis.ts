@@ -1,34 +1,10 @@
 import { Resource, tables } from 'harperdb';
 import { EMA, BollingerBands, RSI } from 'technicalindicators';
-import type { PriceAnalysis, AssetHistoricalPriceData } from '../../types/graphql.js';
+import type { PriceAnalysis } from '../../types/graphql.js';
 import _ from 'lodash';
+import { getRecentPriceHistory } from './helper/getPriceHistory.js';
 
-const { PriceAnalysis: IndicatorsTable, AssetHistoricalPriceData: HistoricalPriceTable } = tables;
-
-const getRecentPriceHistory = async (symbol: string): Promise<number[]> => {
-	const historicalPriceIterator = await HistoricalPriceTable.get({
-		conditions: [
-			{
-				attribute: 'symbol',
-				comparator: 'equals',
-				value: symbol,
-			},
-		],
-		limit: 14,
-		sort: {
-			attribute: 'timestamp',
-			descending: true,
-		},
-		select: ['close'],
-	});
-
-	const results: number[] = [];
-	for await (const record of historicalPriceIterator) {
-		results.push((record as AssetHistoricalPriceData).close);
-	}
-
-	return results;
-};
+const { PriceAnalysis: IndicatorsTable } = tables;
 
 export class PriceWithTechnicalIndicators extends Resource {
 	async get(params: any): Promise<PriceAnalysis> {

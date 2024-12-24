@@ -5,13 +5,13 @@ type Asset @table @sealed @export(name: "asset") {
 }
 
 type User @table @sealed @export(name: "user") {
-	id: ID! @primaryKey
+	id: String! @primaryKey
 	name: String!
 }
 
 type WatchedAsset @table @sealed @export(name: "watched") {
 	id: String! @primaryKey
-	userId: ID
+	userId: String!
 	symbol: String!
 	asset: Asset @relationship(from: symbol)
 	price: AssetLivePriceData @relationship(from: symbol)

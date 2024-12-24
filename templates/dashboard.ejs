@@ -19,34 +19,39 @@
         <!-- Watched Assets Section -->
         <section class="mb-8">
             <h2 class="text-2xl font-semibold text-gray-700 mb-4">Watched Assets</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="watchlist" class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                <% watchedAssets.forEach(asset=> { %>
+                <% watchedAssets.forEach(watched=> { %>
                     <div
-                        class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-                        onclick="redirectToAssetView('<%= asset.symbol %>')"
+                        id="<%= watched.symbol %>:watched"
+                        class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition-shadow duration-300"
                     >
                         <div>
                             <div class="flex items-center space-x-4">
                                 <div>
-                                    <h3 class="text-lg font-semibold text-gray-800"><%= asset.asset.name %> (<%= asset.symbol %>)</h3>
+                                    <h3 class="text-lg font-semibold text-gray-800"><%= watched.asset.name %> (<%= watched.symbol %>)</h3>
                                 </div>
-                                <img src="<%= asset.asset.symbolUrl %>" alt="BTC Logo" class="w-8 h-8 rounded-full" />
+                                <img src="<%= watched.asset.symbolUrl %>" alt="Asset logo" class="w-8 h-8 rounded-full" />
                             </div>
-                            <p id="<%= asset.symbol %>:price" class="text-gray-600 text-sm">Price: <%= asset.price.lastPrice %></p>
+                            <p id="<%= watched.symbol %>:price" class="text-gray-600 text-sm">Price: <%= watched.price.lastPrice %></p>
 
-                            <button class="mt-2 px-3 py-1 bg-red-500  text-white text-sm rounded hover:bg-red-600">
-                                Remove from Watchlist
-                            </button>
+                            <div class="flex">
+                                <button class="mt-2 mr-2 px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600" onclick="removeFromWatchlist('<%= watched.id %>', '<%= watched.symbol %>')">
+                                    Remove
+                                </button>
+                                <button class="mt-2 px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600" onclick="redirectToAssetView('<%= watched.symbol %>')">
+                                    View
+                                </button>
+                            </div>
                         </div>
                         <div class="flex">
-                            <div class="pulsating-indicator <%= asset.price.isNegative ? 'red' : '' %>"></div>
+                            <div class="pulsating-indicator <%= watched.price.isNegative ? 'red' : '' %>"></div>
 
-                            <p class="<%= asset.price.isNegative ? 'text-red-500' : 'text-green-500' %> font-bold text-lg flex items-center">
+                            <p class="<%= watched.price.isNegative ? 'text-red-500' : 'text-green-500' %> font-bold text-lg flex items-center">
 
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 mr-1"
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-1" fill="currentColor"
                                     viewBox="0 0 16 16">
-                                    <% if (!asset.price.isNegative ) { %>
+                                    <% if (!watched.price.isNegative ) { %>
                                         <path fill-rule="evenodd"
                                             d="M8 12a.5.5 0 0 1-.5-.5V4.707L5.354 6.854a.5.5 0 0 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 4.707V11.5a.5.5 0 0 1-.5.5z" />
                                     <% } else { %>
@@ -54,8 +59,8 @@
                                             d="M8 4a.5.5 0 0 1 .5.5v6.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 11.293V4.5a.5.5 0 0 1 .5-.5z" />
                                     <% } %>
                                 </svg>
-                                <p id="<%= asset.symbol %>:change" class="<%= asset.price.isNegative ? 'text-red-500' : 'text-green-500' %> font-bold text-lg">
-                                    <%= asset.price.percentChange %>% (<%= asset.price.change %>)
+                                <p id="<%= watched.symbol %>:change" class="<%= watched.price.isNegative ? 'text-red-500' : 'text-green-500' %> font-bold text-lg">
+                                    <%= watched.price.percentChange %>% (<%= watched.price.change %>)
                                 </p>
                             </p>
                         </div>
@@ -112,20 +117,27 @@
         <!-- Available Assets Section -->
         <section>
             <h2 class="text-2xl font-semibold text-gray-700 mb-4">Available Assets</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div id="availablelist" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <% availableAssets.forEach(asset=> { %>
-                    <div class="bg-white hover:shadow-xl shadow-md transition-shadow duration-300 cursor-pointer rounded-lg p-2" onclick="redirectToAssetView('<%= asset.symbol %>')">
+                    <div id="<%= asset.symbol %>:available" class="bg-white hover:shadow-xl shadow-md transition-shadow duration-300 rounded-lg p-2">
                         <div class="flex items-center space-x-4">
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800">
                                     <%= asset.name %> (<%= asset.symbol %>)
                                 </h3>
                             </div>
-                            <img src="<%= asset.symbolUrl %>" alt="BTC Logo" class="w-5 h-5 rounded-full" />
+                            <img src="<%= asset.symbolUrl %>" alt="Asset logo" class="w-5 h-5 rounded-full" />
                         </div>
-                        <button class="mt-2 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
-                            Add to Watchlist
-                        </button>
+                        <div class="flex">
+                            <button class="mt-2 mr-2 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
+                                onclick="addToWatchlist('<%= asset.symbol %>')">
+                                Watch
+                            </button>
+                            <button class="mt-2 px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600"
+                                onclick="redirectToAssetView('<%= asset.symbol %>')">
+                                View
+                            </button>
+                        </div>
                     </div>
                 <% }) %>
             </div>
@@ -135,47 +147,163 @@
     </div>
 
 <script>
-    function redirectToAssetView(symbol) {
-        window.location.href = `/AssetView/${symbol}`;
-    }
-
-    async function addToWatchlist(symbol, userId = '123-xyz') {
-        await fetch('localhost:9926/watched', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ userId, symbol })
-        });
-
-    }
-
-    function removeFromWatchlist() {
-        window.location.href = '/watchlist';
-    }
+    const watchList = window.__WATCH_LIST__;
+    const wsMap = Object.fromEntries(
+        watchList.map(symbol => [symbol, new WebSocket(`ws://localhost:9926/price-live/${symbol}`)]),
+    );
 
     const dollarFormater = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
     });
 
-    const watchList = window.__WATCH_LIST__;
-    const wsMap = Object.fromEntries(
-        watchList.map(symbol => [symbol, new WebSocket(`ws://localhost:9926/price-live/${symbol}`)]),
-    );
+    function handleLivePriceChange(event, symbol) {console.log(symbol, 'Updated!')
+        const livePriceData = JSON.parse(event.data).value;
+        const lastPrice = dollarFormater.format(livePriceData.lastPrice);
+        const change = dollarFormater.format(livePriceData.change);
+        const percentChange = livePriceData.percentChange.toFixed(1);
 
-    watchList.forEach(symbol => {
-        wsMap[symbol].onmessage = (event) => {
-            const livePriceData = JSON.parse(event.data).value;
-            const lastPrice = dollarFormater.format(livePriceData.lastPrice);
-            const change = dollarFormater.format(livePriceData.change);
-            const percentChange = livePriceData.percentChange.toFixed(1);
+        document.getElementById(`${symbol}:price`).textContent = `Price: ${dollarFormater.format(livePriceData.lastPrice)}`;
+        document.getElementById(`${symbol}:change`).textContent = `${percentChange}% (${change})`
+    }
 
-            document.getElementById(`${symbol}:price`).textContent = `Price: ${dollarFormater.format(livePriceData.lastPrice)}`;
-            document.getElementById(`${symbol}:change`).textContent = `${percentChange}% (${change})`
-        };
+    watchList.forEach((symbol) => {
+        wsMap[symbol].onmessage = (event) => handleLivePriceChange(event, symbol);
     });
+
+    function redirectToAssetView(symbol) {
+        window.location.href = `/AssetView/${symbol}`;
+    }
+
+    async function addToWatchlist(symbol, userId = '123-xyz') {
+        const watchedId = `${symbol}-${userId}`;
+        await fetch('http://localhost:9926/watched/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, symbol, id: `${symbol}-${userId}` }),
+        });
+
+        const queryParams = `select(id,symbol,asset{name,symbolUrl},price{lastPrice,change,percentChange})`;
+        const watchedResponse = await fetch(`http://localhost:9926/watched/${watchedId}?${queryParams}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        });
+        const newWatched = await watchedResponse.json();
+
+        const newWatchedAssetHTML = (name, symbol, lastPrice, symbolUrl, isNegative, percentChange, change) => `
+             <div
+                    id="${symbol}:watched"
+                    class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition-shadow duration-300"
+                >
+                    <div>
+                        <div class="flex items-center space-x-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">${name} (${symbol})</h3>
+                            </div>
+                            <img src="${symbolUrl}" alt="Asset logo" class="w-8 h-8 rounded-full" />
+                        </div>
+                        <p id="${symbol}:price" class="text-gray-600 text-sm">Price: ${lastPrice}</p>
+
+                        <div class="flex">
+                            <button class="mt-2 mr-2 px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600" onclick="removeFromWatchlist('${symbol}')">
+                                Remove
+                            </button>
+                            <button class="mt-2 px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600" onclick="redirectToAssetView('${symbol}')">
+                                View
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex">
+                        <div class="pulsating-indicator ${isNegative ? 'red' : ''}"></div>
+
+                        <p class="${isNegative ? 'text-red-500' : 'text-green-500'} font-bold text-lg flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-1" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                ${!isNegative ? 
+                                    '<path fill-rule="evenodd" d = "M8 12a.5.5 0 0 1-.5-.5V4.707L5.354 6.854a.5.5 0 0 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 4.707V11.5a.5.5 0 0 1-.5.5z" />' : 
+                                    '<path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v6.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 11.293V4.5a.5.5 0 0 1 .5-.5z" />'
+                                }
+                            </svg>
+                            <p id="${symbol}:change" class="${isNegative ? 'text-red-500' : 'text-green-500'} font-bold text-lg">
+                                ${percentChange}% (${change})
+                            </p>
+                        </p>
+                    </div>
+                </div>
+        `;
+        
+        document.getElementById(`${symbol}:available`).remove();
+        document.getElementById('watchlist').innerHTML += newWatchedAssetHTML(
+            newWatched.asset.name,
+            newWatched.symbol,
+            dollarFormater.format(newWatched.price.lastPrice),
+            newWatched.asset.symbolUrl,
+            newWatched.change < 0,
+            newWatched.price.percentChange.toFixed(1),
+            dollarFormater.format(newWatched.price.change),
+        );
+
+        wsMap[symbol] = new WebSocket(`ws://localhost:9926/price-live/${symbol}`);
+        wsMap[symbol].onmessage = (event) => handleLivePriceChange(event, symbol);
+    }
+
+    async function removeFromWatchlist(watchedId, symbol, userId = '123-xyz') {
+        await fetch(`http://localhost:9926/watched/${watchedId}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const assetResponse = await fetch(`http://localhost:9926/asset/${symbol}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        });
+        const availableAsset = await assetResponse.json();
+
+        const newAvailableAssetHTML = (name, symbol, symbolUrl) => `
+            <div id="${symbol}:available" class="bg-white hover:shadow-xl shadow-md transition-shadow duration-300 cursor-pointer rounded-lg p-2" onclick="redirectToAssetView('${symbol}')">
+                <div class="flex items-center space-x-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            ${name} (${symbol})
+                        </h3>
+                    </div>
+                    <img src="${symbolUrl}" alt="Asset logo" class="w-5 h-5 rounded-full" />
+                </div>
+                <div class="flex">
+                    <button class="mt-2 mr-2 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
+                        onclick="addToWatchlist('${symbol}')">
+                        Watch
+                    </button>
+                    <button class="mt-2 px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600"
+                        onclick="redirectToAssetView('${symbol}')">
+                        View
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById(`${symbol}:watched`).remove();
+        document.getElementById('availablelist').innerHTML += newAvailableAssetHTML(
+            availableAsset.name,
+            availableAsset.symbol,
+            availableAsset.symbolUrl,
+        );
+
+        wsMap[symbol].close();
+        delete wsMap[symbol];
+    }
 </script>
 
 <style>
