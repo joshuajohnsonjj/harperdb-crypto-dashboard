@@ -9,7 +9,7 @@ const { PriceAnalysis: IndicatorsTable } = tables;
 
 export class PriceWithTechnicalIndicators extends Resource {
 	async get(params: QueryParams): Promise<PriceAnalysis> {
-		const symbol = params.url.replace('/', '');
+    const symbol = params.url.replace('/', '');
 		const priceHistory = await getRecentPriceHistory(symbol);
 
 		const rsi = RSI.calculate({ values: priceHistory, period: 14 });

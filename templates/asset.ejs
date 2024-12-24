@@ -58,10 +58,10 @@
             <canvas id="priceChart" height="100"></canvas>
         </div>
         <div class="flex justify-between mb-4">
-            <button onclick="updateChart(7)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded">1W</button>
-            <button onclick="updateChart(30)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded">1M</button>
-            <button onclick="updateChart(90)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded">3M</button>
-            <button onclick="updateChart(365)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded">1Y</button>
+            <button id="7Btn" onclick="updateChart(7)" class="bg-blue-500 hover:bg-blue-600 text-gray-700 px-3 py-1 rounded chartBtn">1W</button>
+            <button id="30Btn" onclick="updateChart(30)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded chartBtn">1M</button>
+            <button id="90Btn" onclick="updateChart(90)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded chartBtn">3M</button>
+            <button id="365Btn" onclick="updateChart(365)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded chartBtn">1Y</button>
         </div>
     </div>
 
@@ -140,6 +140,20 @@
         priceChart.data.labels = Array(days).fill('');
         priceChart.data.datasets[0].data = window.__HISTORICAL_DATA__.slice(0, days).reverse().map(item => item.close);
         priceChart.update();
+
+        const chartBtns = document.querySelectorAll('.chartBtn');
+        chartBtns.forEach((btn) => {
+            btn.classList.remove("bg-blue-500");
+            btn.classList.remove("hover:bg-blue-600");
+            btn.classList.add("bg-gray-200");
+            btn.classList.add("hover:bg-gray-300");
+        });
+
+        const activeBtn = document.getElementById(`${days}Btn`);
+        activeBtn.classList.remove("bg-gray-200");
+        activeBtn.classList.remove("hover:bg-gray-300");
+        activeBtn.classList.add("bg-blue-500");
+        activeBtn.classList.add("hover:bg-blue-600");
     }
 
     const pathSegments = window.location.pathname.split('/');
@@ -150,7 +164,7 @@
         currency: 'USD',
     });
 
-    const ws = new WebSocket(`<%= asset.websocketHost %>/price-live/${id}`);
+    const ws = new WebSocket(`<%= websocketHost %>/price-live/${id}`);
     ws.onmessage = (event) => {
         const livePriceData = JSON.parse(event.data).value;
 

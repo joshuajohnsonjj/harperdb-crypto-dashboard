@@ -12,10 +12,10 @@ A simple web app leveraging HarperDB's REST and Websocket interfaces.
   - `export $(cat .env | xargs)`
 - `npm run build`
 - Start HarperDB
-  - `harperdb start`
+  - `harperdb run .`
 - Seed database
   - `npm run run:seed`
-- Run live price ingest background process (optional)
+- Run live price ingest process (optional)
   - `npm run run:live-ingest`
 
 ## Using the application

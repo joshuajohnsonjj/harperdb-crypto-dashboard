@@ -1,7 +1,7 @@
 import { tables } from 'harperdb';
 import type { AssetHistoricalPriceData } from '../../../types/graphql.js';
 
-const { HistoricalPriceTable } = tables;
+const { AssetHistoricalPriceData: HistoricalPriceTable } = tables;
 
 export const getRecentPriceHistory = async (symbol: string): Promise<number[]> => {
 	const historicalPriceIterator = await HistoricalPriceTable.get({
