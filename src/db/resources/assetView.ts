@@ -2,9 +2,10 @@ import { Resource } from 'harperdb';
 import { join } from 'path';
 import ejs from 'ejs';
 import { getAssetDetails } from './helper/getAssetDetail.js';
+import type { QueryParams } from '../../types/query.js';
 
 export class AssetView extends Resource {
-	async get(params: any) {
+	async get(params: QueryParams) {
 		const symbol = params.url.replace('/', '');
 		const detail = await getAssetDetails(symbol);
 

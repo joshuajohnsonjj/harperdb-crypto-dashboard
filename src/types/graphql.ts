@@ -51,19 +51,7 @@ export type AssetLivePriceData = {
 
 export type AssetNews = {
 	__typename?: 'AssetNews';
-	date: Scalars['String']['output'];
-	id: Scalars['ID']['output'];
-	image: Scalars['String']['output'];
-	preview: Scalars['String']['output'];
-	symbol: Scalars['String']['output'];
-	url: Scalars['String']['output'];
-};
-
-export type BiggestMovers = {
-	__typename?: 'BiggestMovers';
-	change: Scalars['Float']['output'];
-	lastPrice: Scalars['Float']['output'];
-	percentChange: Scalars['Float']['output'];
+	content: Scalars['String']['output'];
 	symbol: Scalars['String']['output'];
 };
 
@@ -79,7 +67,7 @@ export type PriceAnalysis = {
 
 export type User = {
 	__typename?: 'User';
-	id: Scalars['ID']['output'];
+	id: Scalars['String']['output'];
 	name: Scalars['String']['output'];
 };
 
@@ -89,5 +77,5 @@ export type WatchedAsset = {
 	id: Scalars['String']['output'];
 	price?: Maybe<AssetLivePriceData>;
 	symbol: Scalars['String']['output'];
-	userId?: Maybe<Scalars['ID']['output']>;
+	userId: Scalars['String']['output'];
 };

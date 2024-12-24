@@ -1,9 +1,12 @@
 import axios from 'axios';
 import { BinanceBaseUrl, BinanceRoutes } from '../../../constants/index.js';
 import type { BinanceDailyTickerResponse } from '../../../types/api.js';
+import type { BiggestMoversResponse } from '../../../types/response.js';
 
-// FIXME: any
-export const getBiggestMovers = async (): Promise<any> => {
+export const getBiggestMovers = async (): Promise<{
+	biggestGainers: BiggestMoversResponse[];
+	biggestLosers: BiggestMoversResponse[];
+}> => {
 	const tickerResponse = await axios.get(`${BinanceBaseUrl}${BinanceRoutes.DAY_TICKER}`);
 
 	if (tickerResponse.status !== 200) {

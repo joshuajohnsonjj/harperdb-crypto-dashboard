@@ -43,11 +43,13 @@ type AssetLivePriceData @table @sealed @export(name: "price-live") {
 	askPrice: Float!
 }
 
+# Cache table
 type AssetNews @table @sealed @export(name: "news") {
 	symbol: String! @primaryKey
 	content: String!
 }
 
+# Cache table
 type PriceAnalysis @table @sealed @export(name: "analysis") {
 	symbol: String! @primaryKey
 	rsi: Float!
@@ -55,11 +57,4 @@ type PriceAnalysis @table @sealed @export(name: "analysis") {
 	upperBand: Float!
 	middleBand: Float!
 	lowerBand: Float!
-}
-
-type BiggestMovers @table @sealed @export(name: "movers") {
-	symbol: String! @primaryKey
-	lastPrice: Float!
-	change: Float!
-	percentChange: Float!
 }

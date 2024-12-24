@@ -1,5 +1,6 @@
 import { tables } from 'harperdb';
 import type { Asset, AssetHistoricalPriceData } from '../../../types/graphql.js';
+import type { AssetDetailResponse } from '../../../types/response.js';
 
 const {
 	Asset: AssetTable,
@@ -9,8 +10,7 @@ const {
 	AssetLivePriceData: LivePriceTable,
 } = tables;
 
-// FIXME: return type
-export const getAssetDetails = async (symbol: string) => {
+export const getAssetDetails = async (symbol: string): Promise<AssetDetailResponse> => {
 	const [asset, price, analysis, news, priceHistoryIterator] = await Promise.all([
 		AssetTable.get({ id: symbol, select: ['name', 'symbolUrl'] }),
 		LivePriceTable.get({ id: symbol, select: ['lastPrice', 'change', 'percentChange'] }),
@@ -43,7 +43,6 @@ export const getAssetDetails = async (symbol: string) => {
 		currency: 'USD',
 	});
 
-	// FIXME: types
 	return {
 		asset: asset as unknown as Asset,
 		price: {

@@ -3,11 +3,12 @@ import { EMA, BollingerBands, RSI } from 'technicalindicators';
 import type { PriceAnalysis } from '../../types/graphql.js';
 import _ from 'lodash';
 import { getRecentPriceHistory } from './helper/getPriceHistory.js';
+import type { QueryParams } from '../../types/query.js';
 
 const { PriceAnalysis: IndicatorsTable } = tables;
 
 export class PriceWithTechnicalIndicators extends Resource {
-	async get(params: any): Promise<PriceAnalysis> {
+	async get(params: QueryParams): Promise<PriceAnalysis> {
 		const symbol = params.url.replace('/', '');
 		const priceHistory = await getRecentPriceHistory(symbol);
 

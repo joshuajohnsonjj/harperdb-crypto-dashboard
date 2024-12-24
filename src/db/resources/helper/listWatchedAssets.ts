@@ -1,9 +1,9 @@
 import { tables } from 'harperdb';
+import type { WatchedAssetResponse } from '../../../types/response.js';
 
 const { WatchedAsset: WatchedAssetTable } = tables;
 
-// FIXME: any type
-export const getWatchedAssets = async (userId: string): Promise<{ [symbol: string]: any }> => {
+export const getWatchedAssets = async (userId: string): Promise<{ [symbol: string]: WatchedAssetResponse }> => {
 	const assetsIterator = await WatchedAssetTable.get({
 		conditions: [
 			{
@@ -32,8 +32,7 @@ export const getWatchedAssets = async (userId: string): Promise<{ [symbol: strin
 		currency: 'USD',
 	});
 
-	// FIXME: any type
-	const results: { [symbol: string]: any } = {};
+	const results: { [symbol: string]: WatchedAssetResponse } = {};
 	for await (const record of assetsIterator) {
 		const watched = record as any;
 		results[watched.symbol] = {

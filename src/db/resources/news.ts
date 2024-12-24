@@ -3,6 +3,7 @@ import { NewsDataBaseUrl, NewsDataRoutes } from '../../constants/index.js';
 import type { Asset, AssetNews } from '../../types/graphql.js';
 import type { NewsAPIResponse } from '../../types/api.js';
 import axios from 'axios';
+import type { QueryParams } from '../../types/query.js';
 
 const { AssetNews: AssetNewsTable, Asset: AssetTable } = tables;
 
@@ -12,7 +13,7 @@ const getAssetName = async (symbol: string): Promise<string> => {
 };
 
 export class ExternalNewsAPI extends Resource {
-	async get(params: any): Promise<any> {
+	async get(params: QueryParams): Promise<any> {
 		try {
 			const symbol = params.url.replace('/', '');
 			const assetName = await getAssetName(symbol);
