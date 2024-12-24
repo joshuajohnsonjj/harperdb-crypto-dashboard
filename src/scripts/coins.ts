@@ -42,6 +42,6 @@ export const COINS = [
 	{
 		symbol: 'dotusdt',
 		name: 'Polkadot',
-		symbolUrl: 'https://cryptologos.cc/logos/polkadot-dot-logo.svg?v=040',
+		symbolUrl: 'https://cryptologos.cc/logos/polkadot-new-dot-logo.svg?v=040',
 	},
 ];

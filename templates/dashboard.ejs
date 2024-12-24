@@ -149,7 +149,7 @@
 <script>
     const watchList = window.__WATCH_LIST__;
     const wsMap = Object.fromEntries(
-        watchList.map(symbol => [symbol, new WebSocket(`ws://localhost:9926/price-live/${symbol}`)]),
+        watchList.map(symbol => [symbol, new WebSocket(`<%= websocketHost %>/price-live/${symbol}`)]),
     );
 
     const dollarFormater = new Intl.NumberFormat('en-US', {
@@ -157,7 +157,7 @@
         currency: 'USD',
     });
 
-    function handleLivePriceChange(event, symbol) {console.log(symbol, 'Updated!')
+    function handleLivePriceChange(event, symbol) {
         const livePriceData = JSON.parse(event.data).value;
         const lastPrice = dollarFormater.format(livePriceData.lastPrice);
         const change = dollarFormater.format(livePriceData.change);
@@ -177,7 +177,7 @@
 
     async function addToWatchlist(symbol, userId = '123-xyz') {
         const watchedId = `${symbol}-${userId}`;
-        await fetch('http://localhost:9926/watched/', {
+        await fetch('<%= restHost %>/watched/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -187,7 +187,7 @@
         });
 
         const queryParams = `select(id,symbol,asset{name,symbolUrl},price{lastPrice,change,percentChange})`;
-        const watchedResponse = await fetch(`http://localhost:9926/watched/${watchedId}?${queryParams}`, {
+        const watchedResponse = await fetch(`<%= restHost %>/watched/${watchedId}?${queryParams}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -249,12 +249,12 @@
             dollarFormater.format(newWatched.price.change),
         );
 
-        wsMap[symbol] = new WebSocket(`ws://localhost:9926/price-live/${symbol}`);
+        wsMap[symbol] = new WebSocket(`<%= websocketHost %>/price-live/${symbol}`);
         wsMap[symbol].onmessage = (event) => handleLivePriceChange(event, symbol);
     }
 
     async function removeFromWatchlist(watchedId, symbol, userId = '123-xyz') {
-        await fetch(`http://localhost:9926/watched/${watchedId}`, {
+        await fetch(`<%= restHost %>/watched/${watchedId}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -262,7 +262,7 @@
             },
         });
 
-        const assetResponse = await fetch(`http://localhost:9926/asset/${symbol}`, {
+        const assetResponse = await fetch(`<%= restHost %>/asset/${symbol}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BinanceBaseUrl, BinanceRoutes } from '../constants/index.js';
+import { BinanceBaseUrl, BinanceRoutes, TableNames } from '../constants/index.js';
 import { COINS } from './coins.js';
 
 const BASIC_AUTH = Buffer.from(`${process.env.HARPERDB_USERNAME}:${process.env.HARPERDB_PASSWORD}`).toString('base64');
@@ -11,14 +11,16 @@ const HEADERS = {
 	},
 };
 
+const UPSERT_OPERATION = 'upsert';
+
 const run = async () => {
 	const userId = '123-xyz';
 	const userResp = await axios.post(
 		process.env.HARPERDB_OPERATIONS_HOST!,
 		{
-			operation: 'upsert',
-			database: 'data',
-			table: 'User',
+			operation: UPSERT_OPERATION,
+			database: process.env.HARPERDB_DATABASE,
+			table: TableNames.USER,
 			records: [
 				{
 					id: userId,
@@ -34,9 +36,9 @@ const run = async () => {
 	const assetResp = await axios.post(
 		process.env.HARPERDB_OPERATIONS_HOST!,
 		{
-			operation: 'upsert',
+			operation: UPSERT_OPERATION,
 			database: process.env.HARPERDB_DATABASE,
-			table: 'Asset',
+			table: TableNames.ASSET,
 			records: COINS,
 		},
 		HEADERS
@@ -47,9 +49,9 @@ const run = async () => {
 	const watchedResp = await axios.post(
 		process.env.HARPERDB_OPERATIONS_HOST!,
 		{
-			operation: 'upsert',
+			operation: UPSERT_OPERATION,
 			database: process.env.HARPERDB_DATABASE,
-			table: 'WatchedAsset',
+			table: TableNames.WATCHED_ASSET,
 			records: [
 				{
 					id: `${COINS[0].symbol}-${userId}`,
@@ -89,9 +91,9 @@ const run = async () => {
 			await axios.post(
 				process.env.HARPERDB_OPERATIONS_HOST!,
 				{
-					operation: 'upsert',
-					database: 'data',
-					table: 'AssetHistoricalPriceData',
+					operation: UPSERT_OPERATION,
+					database: process.env.HARPERDB_DATABASE,
+					table: TableNames.HISTORICAL_PRICE,
 					records: historyData,
 				},
 				HEADERS

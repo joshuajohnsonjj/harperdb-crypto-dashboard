@@ -1,4 +1,4 @@
-import { Resource, tables } from 'harperdb';
+import { Resource } from 'harperdb';
 import { join } from 'path';
 import ejs from 'ejs';
 import { getAssets } from './helper/listAssets.js';
@@ -13,6 +13,8 @@ export class Dashboard extends Resource {
 			availableAssets: assets.filter((asset) => !watched[asset.symbol]),
 			watchedAssets: Object.values(watched),
 			...movers,
+			websocketHost: process.env.HARPERDB_REST_HOST,
+			restHost: process.env.HARPERDB_WEBSOCKET_HOST,
 		});
 
 		return {

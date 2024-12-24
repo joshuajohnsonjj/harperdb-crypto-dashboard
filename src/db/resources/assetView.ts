@@ -10,6 +10,7 @@ export class AssetView extends Resource {
 		const detail = await getAssetDetails(symbol);
 
 		const html = await ejs.renderFile(join(import.meta.dirname, '../../../templates/asset.ejs'), {
+			websocketHost: process.env.HARPERDB_WEBSOCKET_HOST,
 			title: `${detail.asset.name} Detail`,
 			symbol,
 			detail,

@@ -10,3 +10,11 @@ export const NewsDataBaseUrl = 'https://newsdata.io/';
 export enum NewsDataRoutes {
 	LATEST = 'api/1/latest',
 }
+
+export enum TableNames {
+	LIVE_PRICE = 'AssetLivePriceData',
+	USER = 'User',
+	ASSET = 'Asset',
+	WATCHED_ASSET = 'WatchedAsset',
+	HISTORICAL_PRICE = 'AssetHistoricalPriceData',
+}

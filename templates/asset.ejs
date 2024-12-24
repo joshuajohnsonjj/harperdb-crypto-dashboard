@@ -150,7 +150,7 @@
         currency: 'USD',
     });
 
-    const ws = new WebSocket(`ws://localhost:9926/price-live/${id}`);
+    const ws = new WebSocket(`<%= asset.websocketHost %>/price-live/${id}`);
     ws.onmessage = (event) => {
         const livePriceData = JSON.parse(event.data).value;
 

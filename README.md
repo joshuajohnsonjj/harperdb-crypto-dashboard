@@ -8,13 +8,15 @@ A simple web app leveraging HarperDB's REST and Websocket interfaces.
 - Install dependencies
 - Fill in environment variables
   - `cp .env.example .env`
+- Export environment variables (Maybe theres a better way to configure env variables? I couldn't find anything in the docs...)
+  - `export $(cat .env | xargs)`
 - `npm run build`
+- Start HarperDB
+  - `harperdb start`
 - Seed database
   - `npm run run:seed`
-- Run live price ingest in background
-  - `npm run run:live-ingest &`
-- Start HarperDB
-  - `harperdb run .`
+- Run live price ingest background process (optional)
+  - `npm run run:live-ingest`
 
 ## Using the application
 

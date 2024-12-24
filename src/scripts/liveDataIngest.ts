@@ -1,6 +1,7 @@
 import axios from 'axios';
 import WebSocket from 'ws';
 import type { AssetLivePriceData } from '../types/graphql.js';
+import { TableNames } from '../constants/index.js';
 
 const streams = [
 	'btcusdt@ticker',
@@ -34,7 +35,7 @@ setInterval(async () => {
 		{
 			operation: 'upsert',
 			database: process.env.HARPERDB_DATABASE,
-			table: 'AssetLivePriceData',
+			table: TableNames.LIVE_PRICE,
 			records,
 		},
 		{
