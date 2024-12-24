@@ -9,7 +9,6 @@ const { BiggestMovers: MoversTable } = tables;
 export class ExternalDailyTickerAPI extends Resource {
 	async search(): Promise<BiggestMovers[]> {
 		try {
-			// look into streaming this with fetch?
 			const tickerResponse = await axios.get(`${BinanceBaseUrl}${BinanceRoutes.DAY_TICKER}`);
 
 			if (tickerResponse.status !== 200) {
@@ -26,7 +25,7 @@ export class ExternalDailyTickerAPI extends Resource {
 				}))
 				.sort((a, b) => a.percentChange - b.percentChange);
 
-			return [...tickers.slice(1, 6), ...tickers.slice(tickers.length - 6, tickers.length - 1)];
+			return [...tickers.slice(1, 4), ...tickers.slice(tickers.length - 4, tickers.length - 1)];
 		} catch (error) {
 			console.log(`Error getting tickers: ${error}`);
 			return [];

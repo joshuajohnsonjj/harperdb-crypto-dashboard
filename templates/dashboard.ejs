@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!--app-data-->
+</head>
+
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <div class="container mx-auto p-4">
+        <header class="mb-6">
+            <h1 class="text-4xl font-bold text-gray-800 text-center">Crypto Dashboard</h1>
+        </header>
+
+        <!-- Watched Assets Section -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Watched Assets</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <% watchedAssets.forEach(asset=> { %>
+                    <div
+                        class="bg-white shadow-lg rounded-lg p-6 flex items-center justify-between hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+                        onclick="redirectToAssetView('<%= asset.symbol %>')"
+                    >
+                        <div>
+                            <div class="flex items-center space-x-4">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800"><%= asset.asset.name %> (<%= asset.symbol %>)</h3>
+                                </div>
+                                <img src="<%= asset.asset.symbolUrl %>" alt="BTC Logo" class="w-8 h-8 rounded-full" />
+                            </div>
+                            <p class="text-gray-600 text-sm">Price: <%= asset.price.lastPrice %></p>
+
+                            <button class="mt-2 px-3 py-1 bg-red-500  text-white text-sm rounded hover:bg-red-600">
+                                Remove from Watchlist
+                            </button>
+                        </div>
+                        <div class="text-right">
+                            <p class="<%= asset.price.isNegative ? 'text-red-500' : 'text-green-500' %> font-bold text-lg flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 mr-1"
+                                    viewBox="0 0 16 16">
+                                    <% if (!asset.price.isNegative ) { %>
+                                        <path fill-rule="evenodd"
+                                            d="M8 12a.5.5 0 0 1-.5-.5V4.707L5.354 6.854a.5.5 0 0 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 4.707V11.5a.5.5 0 0 1-.5.5z" />
+                                    <% } else { %>
+                                        <path fill-rule="evenodd"
+                                            d="M8 4a.5.5 0 0 1 .5.5v6.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 11.293V4.5a.5.5 0 0 1 .5-.5z" />
+                                    <% } %>
+                                </svg>
+                                <%= asset.price.percentChange %> (<%= asset.price.change %>)
+                            </p>
+                        </div>
+                    </div>
+                <% }) %>
+
+            </div>
+        </section>
+
+        <!-- Available Assets Section -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Available Assets</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <% availableAssets.forEach(asset=> { %>
+                    <div class="bg-white hover:shadow-xl shadow-md transition-shadow duration-300 cursor-pointer rounded-lg p-2" onclick="redirectToAssetView('<%= asset.symbol %>')">
+                        <div class="flex items-center space-x-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    <%= asset.name %> (<%= asset.symbol %>)
+                                </h3>
+                            </div>
+                            <img src="<%= asset.symbolUrl %>" alt="BTC Logo" class="w-5 h-5 rounded-full" />
+                        </div>
+                        <button class="mt-2 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+                            Add to Watchlist
+                        </button>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+        </section>
+    </div>
+
+    <script>
+        function redirectToAssetView(symbol) {
+            window.location.href = `/AssetView/${symbol}`;
+        }
+    </script>
+</body>
+</html>

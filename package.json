@@ -26,6 +26,7 @@
 		"@graphql-codegen/typescript": "^4.1.2",
 		"@graphql-codegen/typescript-operations": "^4.4.0",
 		"@harperdb/code-guidelines": "^0.0.2",
+		"@types/ejs": "^3.1.5",
 		"@types/lodash": "^4.17.13",
 		"@types/node": "^22.10.2",
 		"graphql": "^16.10.0",
@@ -35,6 +36,7 @@
 	},
 	"dependencies": {
 		"axios": "^1.7.9",
+		"ejs": "^3.1.10",
 		"lodash": "^4.17.21",
 		"technicalindicators": "^3.1.0",
 		"ws": "^8.18.0"

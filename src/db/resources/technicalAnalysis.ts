@@ -32,7 +32,7 @@ const getRecentPriceHistory = async (symbol: string): Promise<number[]> => {
 
 export class PriceWithTechnicalIndicators extends Resource {
 	async get(params: any): Promise<PriceAnalysis> {
-		const symbol = params.url;
+		const symbol = params.url.replace('/', '');
 		const priceHistory = await getRecentPriceHistory(symbol);
 
 		const rsi = RSI.calculate({ values: priceHistory, period: 14 });

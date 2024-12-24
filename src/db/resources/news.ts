@@ -14,11 +14,12 @@ const getAssetName = async (symbol: string): Promise<string> => {
 export class ExternalNewsAPI extends Resource {
 	async get(params: any): Promise<AssetNews[]> {
 		try {
-			const symbol = params.url;
+			const symbol = params.url.replace('/', '');
 			const assetName = await getAssetName(symbol);
 
+			// FIXME:
 			const query = new URLSearchParams({
-				apikey: process.env.NEWS_API_KEY!,
+				apikey: 'pub_63003085e3999ffa9d650d914d22fafbdf5bd', //process.env.NEWS_API_KEY!,
 				qInMeta: assetName,
 				size: '10',
 				language: 'en',
@@ -33,7 +34,8 @@ export class ExternalNewsAPI extends Resource {
 				return [];
 			}
 
-			return tickerResponse.data.results.map((item: NewsAPIResponse) => ({
+			return tickerResponse.data.results.map((item: NewsAPIResponse, ndx: number) => ({
+				id: `${symbol}-${ndx}`,
 				symbol,
 				url: item.link,
 				preview: item.title,

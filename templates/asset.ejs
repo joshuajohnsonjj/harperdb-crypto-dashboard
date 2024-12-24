@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!--app-data-->
+</head>
+
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+<div class="container mx-auto p-4">
+    <!-- Back to Dashboard Button -->
+    <div class="mb-4">
+        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md"
+            onclick="window.location.href='/Dashboard';">
+            ← Back to Dashboard
+        </button>
+    </div>
+
+    <!-- Asset Header -->
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <div class="flex items-center space-x-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">
+                        <%= detail.asset.name %> (<%= symbol %>)
+                    </h1>
+                </div>
+                <img src="<%= detail.asset.symbolUrl %>" alt="BTC Logo" class="w-12 h-12 rounded-full" />
+            </div>
+            
+            <p class="text-xl text-gray-600">Price: <%= detail.price.lastPrice %></p>
+        </div>
+        <div class="flex items-center <%= detail.price.isNegative ? 'text-red-500' : 'text-green-500' %> font-bold text-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-8 h-8 mr-2" viewBox="0 0 16 16">
+                <% if (!detail.price.isNegative ) { %>
+                    <path fill-rule="evenodd"
+                        d="M8 12a.5.5 0 0 1-.5-.5V4.707L5.354 6.854a.5.5 0 0 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 4.707V11.5a.5.5 0 0 1-.5.5z" />
+                <% } else { %>
+                    <path fill-rule="evenodd"
+                        d="M8 4a.5.5 0 0 1 .5.5v6.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 11.293V4.5a.5.5 0 0 1 .5-.5z" />
+                <% } %>
+            </svg>
+            <%= detail.price.percentChange %> (<%= detail.price.change %>)
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="mb-8">
+        <div class="bg-gray-100 rounded-lg shadow-lg p-6">
+            <canvas id="priceChart" height="100"></canvas>
+        </div>
+        <div class="flex justify-between mb-4">
+            <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded">1W</button>
+            <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded">1M</button>
+            <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded">3M</button>
+            <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded">1Y</button>
+        </div>
+    </div>
+
+    <!-- Numerical Stats Grid -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Technical Analysis</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Example Stat -->
+            <div class="bg-white shadow rounded-lg p-4 text-center">
+                <p class="text-gray-600">Relative Strength Index</p>
+                <p class="text-lg font-bold text-gray-800"><%= detail.analysis.rsi %></p>
+            </div>
+            <div class="bg-white shadow rounded-lg p-4 text-center">
+                <p class="text-gray-600">Exponential Moving Average</p>
+                <p class="text-lg font-bold text-gray-800"><%= detail.analysis.ema12 %></p>
+            </div>
+            <div class="bg-white shadow rounded-lg p-4 text-center">
+                <p class="text-gray-600">Upper Bolinger Band</p>
+                <p class="text-lg font-bold text-gray-800"><%= detail.analysis.upperBand %></p>
+            </div>
+            <div class="bg-white shadow rounded-lg p-4 text-center">
+                <p class="text-gray-600">Lower Bolinger Band</p>
+                <p class="text-lg font-bold text-gray-800"><%= detail.analysis.lowerBand %></p>
+            </div>
+            <!-- Add more stats dynamically -->
+        </div>
+    </div>
+
+    <!-- News Articles Section -->
+    <div>
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Recent News</h2>
+        <div class="space-y-4">
+            <!-- Example News Article -->
+            <a href="https://news.example.com" target="_blank"
+                class="flex items-center p-4 bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow duration-300">
+                <img src="https://via.placeholder.com/80" alt="News Thumbnail" class="w-20 h-20 rounded mr-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Bitcoin Hits New High</h3>
+                    <p class="text-sm text-gray-500">Dec 21, 2024</p>
+                </div>
+            </a>
+            <!-- Add more news dynamically -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sample Data (replace with real data)
+    const labels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
+    const priceData = [23000, 23100, 22950, 23200, 23400, 23300, 23500];
+
+    // Chart Configuration
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    const priceChart = new Chart(ctx, {
+        type: 'line', // Chart type
+        data: {
+            labels: labels, // X-axis labels
+            datasets: [
+                {
+                    data: priceData, // Y-axis data
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.4, // Smooth lines
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            // plugins: {
+            //     legend: {
+            //         display: true,
+            //         position: 'top',
+            //     },
+            // },
+            // scales: {
+            //     x: {
+            //         title: {
+            //             display: true,
+            //             text: 'Time',
+            //         },
+            //     },
+            //     y: {
+            //         title: {
+            //             display: true,
+            //             text: 'Price ($)',
+            //         },
+            //     },
+            // },
+        },
+    });
+
+    // Example: Updating Chart Data Dynamically
+    function updateChart(newLabels, newData) {
+        priceChart.data.labels = newLabels;
+        priceChart.data.datasets[0].data = newData;
+        priceChart.update();
+    }
+</script>
+
+
+</body>
+</html>

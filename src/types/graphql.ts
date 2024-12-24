@@ -26,11 +26,11 @@ export type AssetHistoricalPriceData = {
 	asset?: Maybe<Asset>;
 	close: Scalars['Float']['output'];
 	high: Scalars['Float']['output'];
-	id: Scalars['ID']['output'];
+	id: Scalars['String']['output'];
 	low: Scalars['Float']['output'];
 	open: Scalars['Float']['output'];
 	symbol: Scalars['String']['output'];
-	timestamp: Scalars['Int']['output'];
+	timestamp: Scalars['String']['output'];
 	volume: Scalars['Float']['output'];
 };
 
@@ -86,8 +86,8 @@ export type User = {
 export type WatchedAsset = {
 	__typename?: 'WatchedAsset';
 	asset?: Maybe<Asset>;
-	id: Scalars['ID']['output'];
+	id: Scalars['String']['output'];
+	price?: Maybe<AssetLivePriceData>;
 	symbol: Scalars['String']['output'];
-	user?: Maybe<User>;
 	userId?: Maybe<Scalars['ID']['output']>;
 };
