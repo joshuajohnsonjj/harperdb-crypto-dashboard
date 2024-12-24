@@ -34,7 +34,7 @@
                 <img src="<%= detail.asset.symbolUrl %>" alt="BTC Logo" class="w-12 h-12 rounded-full" />
             </div>
             
-            <p class="text-xl text-gray-600">Price: <%= detail.price.lastPrice %></p>
+            <p id="price" class="text-xl text-gray-600">Price: <%= detail.price.lastPrice %></p>
         </div>
         <div class="flex items-center <%= detail.price.isNegative ? 'text-red-500' : 'text-green-500' %> font-bold text-xl">
             <div class="pulsating-indicator <%= detail.price.isNegative ? 'red' : '' %>"></div>
@@ -48,7 +48,7 @@
                         d="M8 4a.5.5 0 0 1 .5.5v6.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 11.293V4.5a.5.5 0 0 1 .5-.5z" />
                 <% } %>
             </svg>
-            <%= detail.price.percentChange %>% (<%= detail.price.change %>)
+            <p id="change"><%= detail.price.percentChange %>% (<%= detail.price.change %>)</p>
         </div>
     </div>
 
@@ -145,10 +145,21 @@
     const pathSegments = window.location.pathname.split('/');
     const id = pathSegments[pathSegments.length - 1];
 
-    const ws = new WebSocket(`ws://localhost:9926/AssetLivePriceData/${id}`);
+    const dollarFormater = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+
+    const ws = new WebSocket(`ws://localhost:9926/price-live/${id}`);
     ws.onmessage = (event) => {
-        console.log('update')
-        console.log(event.data);
+        const livePriceData = JSON.parse(event.data).value;
+
+        const lastPrice = dollarFormater.format(livePriceData.lastPrice);
+        const change = dollarFormater.format(livePriceData.change);
+        const percentChange = livePriceData.percentChange.toFixed(1);
+
+        document.getElementById('price').textContent = `Price: ${dollarFormater.format(livePriceData.lastPrice)}`;
+        document.getElementById('change').textContent = `${percentChange}% (${change})`
     };
 </script>
 

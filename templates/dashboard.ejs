@@ -33,7 +33,7 @@
                                 </div>
                                 <img src="<%= asset.asset.symbolUrl %>" alt="BTC Logo" class="w-8 h-8 rounded-full" />
                             </div>
-                            <p class="text-gray-600 text-sm">Price: <%= asset.price.lastPrice %></p>
+                            <p id="<%= asset.symbol %>:price" class="text-gray-600 text-sm">Price: <%= asset.price.lastPrice %></p>
 
                             <button class="mt-2 px-3 py-1 bg-red-500  text-white text-sm rounded hover:bg-red-600">
                                 Remove from Watchlist
@@ -54,7 +54,9 @@
                                             d="M8 4a.5.5 0 0 1 .5.5v6.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 11.293V4.5a.5.5 0 0 1 .5-.5z" />
                                     <% } %>
                                 </svg>
-                                <%= asset.price.percentChange %>% (<%= asset.price.change %>)
+                                <p id="<%= asset.symbol %>:change" class="<%= asset.price.isNegative ? 'text-red-500' : 'text-green-500' %> font-bold text-lg">
+                                    <%= asset.price.percentChange %>% (<%= asset.price.change %>)
+                                </p>
                             </p>
                         </div>
                     </div>
@@ -132,60 +134,82 @@
         </section>
     </div>
 
-    <script>
-        function redirectToAssetView(symbol) {
-            window.location.href = `/AssetView/${symbol}`;
+<script>
+    function redirectToAssetView(symbol) {
+        window.location.href = `/AssetView/${symbol}`;
+    }
+
+    async function addToWatchlist(symbol, userId = '123-xyz') {
+        await fetch('localhost:9926/watched', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, symbol })
+        });
+
+    }
+
+    function removeFromWatchlist() {
+        window.location.href = '/watchlist';
+    }
+
+    const dollarFormater = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+
+    const watchList = window.__WATCH_LIST__;
+    const wsMap = Object.fromEntries(
+        watchList.map(symbol => [symbol, new WebSocket(`ws://localhost:9926/price-live/${symbol}`)]),
+    );
+
+    watchList.forEach(symbol => {
+        wsMap[symbol].onmessage = (event) => {
+            const livePriceData = JSON.parse(event.data).value;
+            const lastPrice = dollarFormater.format(livePriceData.lastPrice);
+            const change = dollarFormater.format(livePriceData.change);
+            const percentChange = livePriceData.percentChange.toFixed(1);
+
+            document.getElementById(`${symbol}:price`).textContent = `Price: ${dollarFormater.format(livePriceData.lastPrice)}`;
+            document.getElementById(`${symbol}:change`).textContent = `${percentChange}% (${change})`
+        };
+    });
+</script>
+
+<style>
+    .pulsating-indicator {
+        width: 8px;
+        height: 8px;
+        background-color: #16a34a;
+        border-radius: 50%;
+        animation: pulse 1.5s infinite;
+        margin-top: 0.6rem;
+        margin-right: 0.5rem;
+    }
+
+    .pulsating-indicator.red {
+        background-color: #dc2626; 
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
         }
 
-        async function addToWatchlist(symbol, userId = '123-xyz') {
-            await fetch('localhost:9926/watched', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ userId, symbol })
-            });
-
+        50% {
+            transform: scale(1.5);
+            opacity: 0.5;
         }
 
-        function removeFromWatchlist() {
-            window.location.href = '/watchlist';
+        100% {
+            transform: scale(1);
+            opacity: 1;
         }
-    </script>
-
-    <style>
-        .pulsating-indicator {
-            width: 8px;
-            height: 8px;
-            background-color: #16a34a;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-            margin-top: 0.6rem;
-            margin-right: 0.5rem;
-        }
-
-        .pulsating-indicator.red {
-            background-color: #dc2626; 
-        }
-    
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-    
-            50% {
-                transform: scale(1.5);
-                opacity: 0.5;
-            }
-    
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-    </style>
+    }
+</style>
 
 </body>
 </html>

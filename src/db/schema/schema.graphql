@@ -46,10 +46,6 @@ type AssetLivePriceData @table @sealed @export(name: "price-live") {
 type AssetNews @table @sealed @export(name: "news") {
 	symbol: String! @primaryKey
 	content: String!
-	# url: String!
-	# preview: String!
-	# image: String!
-	# date: String!
 }
 
 type PriceAnalysis @table @sealed @export(name: "analysis") {

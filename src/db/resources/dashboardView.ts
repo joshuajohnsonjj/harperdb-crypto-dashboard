@@ -88,7 +88,7 @@ export class Dashboard extends Resource {
 	async get() {
 		const [assets, watched, movers] = await Promise.all([getAssets(), getWatchedAssets('123-xyz'), getBiggestMovers()]);
 
-		const html = await ejs.renderFile(join(import.meta.dirname, '../../../templates/dashboard.ejs'), {
+		const html: string = await ejs.renderFile(join(import.meta.dirname, '../../../templates/dashboard.ejs'), {
 			availableAssets: assets.filter((asset) => !watched[asset.symbol]),
 			watchedAssets: Object.values(watched),
 			...movers,
@@ -97,7 +97,10 @@ export class Dashboard extends Resource {
 		return {
 			status: 200,
 			headers: { 'Content-Type': 'text/html' },
-			body: html,
+			body: html.replace(
+				`<!--app-data-->`,
+				`<script>window.__WATCH_LIST__ = ${JSON.stringify(Object.keys(watched))};</script>`
+			),
 		};
 	}
 }
